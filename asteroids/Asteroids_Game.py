@@ -7,7 +7,8 @@ from pathlib import Path
 from GameObjects import *
 from Spaceship import Spaceship
 from Asteroid import Asteroid
-
+#Гусева Мария
+#Величко Анастасия
 
 class Game:
     def __init__(self):
