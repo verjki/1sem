@@ -1,0 +1,61 @@
+from tkinter import *
+import math
+
+
+class MovingBall:
+    def __init__(self, center_x, center_y, radius, distance_from_center, angle, speed, x, y,
+                 window_obj, canvas_obj, clockwise=True, color='white'):
+        self.center_x = center_x
+        self.center_y = center_y
+        self.radius = radius
+        self.distance_from_center = distance_from_center
+        self.angle = angle
+        self.speed = speed
+        self.x = x
+        self.y = y
+        self.clockwise = clockwise
+        self.color = color
+        self.canvas_obj = canvas_obj
+        self.window_obj = window_obj
+        self.children_ovals = []
+        self.id = self.canvas_obj.create_oval(*self.get_position(), fill=self.color)
+
+    def add_orbiting_child(self, child):
+        self.children_ovals.append(child)
+
+    def get_position(self):
+        self.x = self.center_x - self.distance_from_center * math.sin(math.radians((-1 if self.clockwise else 1) * self.angle))
+        self.y = self.center_y - self.distance_from_center * math.cos(math.radians((-1 if self.clockwise else 1) * self.angle))
+        return self.x - self.radius, self.y - self.radius, self.x + self.radius, self.y + self.radius
+
+    def start_rotation(self):
+        self.angle += self.speed
+        self.canvas_obj.coords(self.id, *self.get_position())
+        for child_oval in self.children_ovals:
+            child_oval.center_x = self.x
+            child_oval.center_y = self.y
+            self.canvas_obj.coords(child_oval.id, *child_oval.get_position())
+        self.window_obj.after(10, self.start_rotation)
+
+
+def main():
+    width = 600
+    height = 600
+    window = Tk()
+    window.title("Мяч по кругу")
+
+    canvas = Canvas(window, width=width, heigh=height,bg = "yellow")
+    canvas.pack()
+
+    big_circle = MovingBall(width // 2, height // 2, 200, 0, 0, 0, 0, 0, window, canvas)
+    small_ball = MovingBall(big_circle.x, big_circle.y, 10, 200, 0, 0.5 , 0, 0,
+                                    window, canvas, clockwise=True, color='red')
+
+
+
+    small_ball.start_rotation()
+
+    window.mainloop()
+
+
+main()
